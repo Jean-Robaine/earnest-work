@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FocusRouteImport } from './routes/focus'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TodayRouteImport } from './routes/today'
 import { Route as DayDateRouteImport } from './routes/day.$date'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const FocusRoute = FocusRouteImport.update({
   id: '/focus',
   path: '/focus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TodayRoute = TodayRouteImport.update({
@@ -38,12 +44,14 @@ const DayDateRoute = DayDateRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/focus': typeof FocusRoute
+  '/settings': typeof SettingsRoute
   '/today': typeof TodayRoute
   '/day/$date': typeof DayDateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/focus': typeof FocusRoute
+  '/settings': typeof SettingsRoute
   '/today': typeof TodayRoute
   '/day/$date': typeof DayDateRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/focus': typeof FocusRoute
+  '/settings': typeof SettingsRoute
   '/today': typeof TodayRoute
   '/day/$date': typeof DayDateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/focus' | '/today' | '/day/$date'
+  fullPaths: '/' | '/focus' | '/settings' | '/today' | '/day/$date'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/focus' | '/today' | '/day/$date'
-  id: '__root__' | '/' | '/focus' | '/today' | '/day/$date'
+  to: '/' | '/focus' | '/settings' | '/today' | '/day/$date'
+  id: '__root__' | '/' | '/focus' | '/settings' | '/today' | '/day/$date'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FocusRoute: typeof FocusRoute
+  SettingsRoute: typeof SettingsRoute
   TodayRoute: typeof TodayRoute
   DayDateRoute: typeof DayDateRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/focus'
       fullPath: '/focus'
       preLoaderRoute: typeof FocusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/today': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FocusRoute: FocusRoute,
+  SettingsRoute: SettingsRoute,
   TodayRoute: TodayRoute,
   DayDateRoute: DayDateRoute,
 }
