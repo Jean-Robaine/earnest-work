@@ -36,7 +36,7 @@ function FocusPage() {
   if (!hydrated) {
     return (
       <AppShell bare>
-        <p className="py-20 text-center text-sm text-muted-foreground">Chargement…</p>
+        <p className="py-24 text-center text-sm text-muted-foreground">Chargement…</p>
       </AppShell>
     );
   }
@@ -44,12 +44,9 @@ function FocusPage() {
   if (!state) {
     return (
       <AppShell>
-        <div className="surface-card rise-in px-6 py-14 text-center">
-          <p className="font-display text-lg">Aucune session en cours.</p>
-          <Link
-            to="/"
-            className="mt-6 inline-flex min-h-11 items-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground"
-          >
+        <div className="rise-in py-20 text-center">
+          <p className="text-[0.95rem] text-muted-foreground">Aucune session en cours.</p>
+          <Link to="/" className="mt-4 inline-flex min-h-11 items-center text-sm underline underline-offset-4">
             Choisir une durée
           </Link>
         </div>
@@ -62,16 +59,13 @@ function FocusPage() {
   return (
     <AppShell bare={state.state === "WORKING" || state.state === "BREAK"}>
       {(state.state === "WORKING" || state.state === "BREAK") && (
-        <div className="rise-in flex flex-col items-center gap-8 py-6 text-center sm:py-12">
-          <p
-            className="label-caps"
-            style={{ color: state.state === "WORKING" ? "var(--focus)" : "var(--rest)" }}
-          >
+        <div className="rise-in flex min-h-[70dvh] flex-col items-center justify-center text-center">
+          <p className="label-caps text-muted-foreground">
             {state.state === "WORKING" ? "Focus" : "Pause"}
           </p>
 
           <p
-            className="timer-digits text-[24vw] sm:text-[9rem]"
+            className="timer-digits mt-8 text-[19vw] sm:text-[7.5rem] lg:text-[8.5rem]"
             role="timer"
             aria-live="off"
             aria-label={`Temps restant ${formatClock(remainingSeconds)}`}
@@ -79,48 +73,34 @@ function FocusPage() {
             {formatClock(remainingSeconds)}
           </p>
 
-          {state.state === "WORKING" ? (
-            <p className="text-sm text-muted-foreground">
-              Session {state.sessionNumber} / {state.totalSessions} · Objectif{" "}
-              {formatDuration(state.goalSeconds)}
-            </p>
-          ) : (
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Profite de ces quelques minutes.</p>
-              <p className="text-sm text-muted-foreground">
-                Prochaine session : {formatDuration(state.blocks[state.blockIndex + 1]?.seconds ?? 0)}
-              </p>
-            </div>
-          )}
+          <p className="mt-8 text-sm text-muted-foreground">
+            {state.state === "WORKING"
+              ? `Session ${state.sessionNumber} / ${state.totalSessions}`
+              : "Souffle un peu."}
+          </p>
 
-          <div className="w-full max-w-md space-y-2">
+          <div
+            className="mt-10 h-px w-full max-w-xs bg-border"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progress)}
+            aria-label="Progression de l'objectif"
+          >
             <div
-              className="h-1.5 w-full overflow-hidden rounded-full bg-secondary"
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(progress)}
-              aria-label="Progression de l'objectif"
-            >
-              <div
-                className="h-full rounded-full bg-accent transition-[width] duration-500 ease-out"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {Math.floor(liveWorkSeconds / 60)} / {Math.round(state.goalSeconds / 60)} min de
-              travail
-            </p>
+              className="h-px bg-foreground/50 transition-[width] duration-700 ease-out"
+              style={{ width: `${progress}%` }}
+            />
           </div>
 
-          <div className="flex gap-3">
+          <div className="mt-14 flex items-center gap-8">
             {state.state === "BREAK" && (
               <button
                 onClick={() => {
                   unlockAudio();
                   skipBreak();
                 }}
-                className="min-h-11 rounded-full border border-border px-5 text-sm transition-colors hover:bg-secondary"
+                className="min-h-11 text-sm transition-colors hover:text-foreground"
               >
                 Passer la pause
               </button>
@@ -132,9 +112,9 @@ function FocusPage() {
                   void navigate({ to: "/" });
                 }
               }}
-              className="min-h-11 rounded-full px-5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="min-h-11 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              Arrêter
+              Terminer
             </button>
           </div>
         </div>
@@ -142,7 +122,7 @@ function FocusPage() {
 
       {state.state === "AWAITING_LOG" && (
         <form
-          className="rise-in space-y-5"
+          className="rise-in mx-auto max-w-lg py-6"
           onSubmit={(e) => {
             e.preventDefault();
             unlockAudio();
@@ -150,12 +130,12 @@ function FocusPage() {
             setNote("");
           }}
         >
-          <div className="text-center">
-            <p className="label-caps text-muted-foreground">Session terminée</p>
-            <h1 className="mt-3 font-display text-2xl font-medium tracking-tight sm:text-3xl">
-              Qu'as-tu fait pendant ces {formatDuration(state.currentSessionDurationSeconds)} ?
-            </h1>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            Session terminée · {formatDuration(state.currentSessionDurationSeconds)}
+          </p>
+          <h1 className="mt-3 font-display text-2xl font-normal tracking-tight sm:text-3xl">
+            Qu'as-tu fait ?
+          </h1>
           <label htmlFor="session-note" className="sr-only">
             Compte rendu de la session
           </label>
@@ -167,46 +147,42 @@ function FocusPage() {
               setNote(e.target.value);
               setDraftNote(e.target.value);
             }}
-            rows={7}
-            placeholder="Écris ce que tu as accompli pendant cette session…"
-            className="w-full resize-y rounded-2xl border border-input bg-surface p-4 text-[0.95rem] leading-relaxed shadow-[var(--shadow-soft)] outline-none placeholder:text-muted-foreground"
+            rows={8}
+            placeholder="Écris ce que tu as accompli…"
+            className="mt-8 w-full resize-y border-0 border-b border-border bg-transparent pb-3 text-[1.05rem] leading-relaxed outline-none placeholder:text-muted-foreground focus:border-foreground"
           />
           <button
             type="submit"
-            className="min-h-14 w-full rounded-full bg-primary text-base font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            className="mt-10 min-h-12 rounded-md bg-primary px-10 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
           >
             Enregistrer
           </button>
-          <p className="text-center text-xs text-muted-foreground">
-            La pause démarrera après l'enregistrement.
-          </p>
         </form>
       )}
 
       {state.state === "COMPLETED" && (
-        <div className="rise-in surface-card px-6 py-14 text-center">
-          <p className="label-caps text-muted-foreground">Travail terminé</p>
-          <p className="mt-4 font-display text-4xl font-medium tracking-tight">
-            {formatDuration(state.goalSeconds)} de focus
+        <div className="rise-in flex min-h-[60dvh] flex-col items-center justify-center text-center">
+          <p className="label-caps text-muted-foreground">Terminé</p>
+          <p className="timer-digits mt-8 text-5xl sm:text-6xl">
+            {formatDuration(state.goalSeconds)}
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {state.totalSessions} session{state.totalSessions > 1 ? "s" : ""}
+          <p className="mt-4 text-sm text-muted-foreground">
+            {state.totalSessions} session{state.totalSessions > 1 ? "s" : ""} de focus
           </p>
-          <p className="mt-6 text-[0.95rem]">Beau travail. Prends une vraie pause maintenant.</p>
-          <div className="mt-8 flex flex-col items-center gap-3">
+          <div className="mt-14 flex items-center gap-8">
             <Link
               to="/today"
               onClick={() => reset()}
-              className="inline-flex min-h-12 w-full max-w-xs items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground"
+              className="inline-flex min-h-12 items-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground"
             >
-              Voir ma journée
+              Voir mon journal
             </Link>
             <button
               onClick={() => {
                 reset();
                 void navigate({ to: "/" });
               }}
-              className="min-h-11 text-sm text-muted-foreground hover:text-foreground"
+              className="min-h-11 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Nouvelle session
             </button>
