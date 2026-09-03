@@ -44,7 +44,7 @@ export function formatDateKey(dateKey: string): string {
 
 export function shiftDateKey(dateKey: string, days: number): string {
   const [y, m, d] = dateKey.split("-").map(Number);
-  const date = new Date(y, m - 1, d);
+  const date = new Date(y!, m! - 1, d!);
   date.setDate(date.getDate() + days);
   const yy = date.getFullYear();
   const mm = `${date.getMonth() + 1}`.padStart(2, "0");

@@ -26,7 +26,7 @@ function chime(reason: "work" | "break") {
 }
 
 function startBlock(state: TimerState, index: number, from: Date): TimerState {
-  const block = state.blocks[index];
+  const block = state.blocks[index]!;
   const startedAt = from.toISOString();
   const endsAt = new Date(from.getTime() + block.seconds * 1000).toISOString();
   return {
@@ -118,7 +118,7 @@ export function useTimer() {
     if (next === state) return;
     if (fired.length && !firedRef.current) {
       firedRef.current = true;
-      chime(fired[fired.length - 1]);
+      chime(fired[fired.length - 1]!);
       window.setTimeout(() => {
         firedRef.current = false;
       }, 1000);
@@ -138,7 +138,7 @@ export function useTimer() {
         blocks,
         blockIndex: 0,
         completedWorkSeconds: 0,
-        currentSessionDurationSeconds: blocks[0].seconds,
+        currentSessionDurationSeconds: blocks[0]!.seconds,
         currentSessionStartedAt: null,
         currentSessionEndsAt: null,
         sessionNumber: 1,
