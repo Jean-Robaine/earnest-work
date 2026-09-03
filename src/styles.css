@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Focus — design system.
- * Warm paper + deep ink + a single clay accent. Calm, premium, quiet.
- * All colors are oklch semantic tokens. Never hardcode colors in components.
+ * Focus — ultra minimal design system.
+ * Warm off-white paper, near-black ink, no accent color, no decoration.
+ * All colors are semantic tokens. Never hardcode colors in components.
  */
 
 @theme inline {
@@ -41,37 +41,35 @@
   --color-focus: var(--focus);
   --color-rest: var(--rest);
   --color-surface: var(--surface);
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-display: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", "Menlo", monospace;
-  --shadow-soft: 0 1px 2px oklch(0.25 0.03 60 / 0.05), 0 12px 32px oklch(0.25 0.03 60 / 0.06);
-  --shadow-lift: 0 2px 6px oklch(0.25 0.03 60 / 0.07), 0 24px 60px oklch(0.25 0.03 60 / 0.09);
 }
 
 :root {
-  --radius: 0.875rem;
-  --background: oklch(0.978 0.008 85);
-  --foreground: oklch(0.24 0.018 60);
-  --surface: oklch(0.995 0.004 85);
-  --card: oklch(0.995 0.004 85);
-  --card-foreground: oklch(0.24 0.018 60);
-  --popover: oklch(0.995 0.004 85);
-  --popover-foreground: oklch(0.24 0.018 60);
-  --primary: oklch(0.28 0.02 60);
-  --primary-foreground: oklch(0.98 0.008 85);
-  --secondary: oklch(0.945 0.011 85);
-  --secondary-foreground: oklch(0.3 0.02 60);
-  --muted: oklch(0.948 0.009 85);
-  --muted-foreground: oklch(0.53 0.017 65);
-  --accent: oklch(0.63 0.14 47);
-  --accent-foreground: oklch(0.99 0.006 85);
-  --destructive: oklch(0.55 0.19 26);
-  --destructive-foreground: oklch(0.99 0.006 85);
-  --border: oklch(0.905 0.011 80);
-  --input: oklch(0.905 0.011 80);
-  --ring: oklch(0.63 0.14 47);
-  --focus: oklch(0.63 0.14 47);
-  --rest: oklch(0.58 0.07 195);
+  --radius: 0.5rem;
+  --background: oklch(0.981 0.003 85);
+  --foreground: oklch(0.19 0.004 60);
+  --surface: oklch(0.981 0.003 85);
+  --card: oklch(0.981 0.003 85);
+  --card-foreground: oklch(0.19 0.004 60);
+  --popover: oklch(0.99 0.002 85);
+  --popover-foreground: oklch(0.19 0.004 60);
+  --primary: oklch(0.19 0.004 60);
+  --primary-foreground: oklch(0.985 0.002 85);
+  --secondary: oklch(0.955 0.003 85);
+  --secondary-foreground: oklch(0.24 0.004 60);
+  --muted: oklch(0.955 0.003 85);
+  --muted-foreground: oklch(0.56 0.005 70);
+  --accent: oklch(0.19 0.004 60);
+  --accent-foreground: oklch(0.985 0.002 85);
+  --destructive: oklch(0.48 0.13 26);
+  --destructive-foreground: oklch(0.99 0.002 85);
+  --border: oklch(0.915 0.004 80);
+  --input: oklch(0.9 0.004 80);
+  --ring: oklch(0.5 0.005 70);
+  --focus: oklch(0.19 0.004 60);
+  --rest: oklch(0.56 0.005 70);
 }
 
 @layer base {
@@ -88,7 +86,6 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    font-feature-settings: "cv02", "cv03", "ss01";
   }
 
   :focus-visible {
@@ -101,37 +98,28 @@
   font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
   font-weight: 300;
-  letter-spacing: -0.04em;
-  line-height: 0.95;
+  letter-spacing: -0.045em;
+  line-height: 1;
 }
 
 @utility label-caps {
   text-transform: uppercase;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   font-size: 0.6875rem;
-  font-weight: 500;
-}
-
-@utility surface-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-soft);
+  font-weight: 400;
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
 @utility rise-in {
-  animation: rise-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise-in 0.35s ease both;
 }
 
 @media (prefers-reduced-motion: reduce) {
