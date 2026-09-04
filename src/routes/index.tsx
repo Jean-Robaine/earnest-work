@@ -74,7 +74,7 @@ function Home() {
           </button>
         )}
 
-        <h1 className="font-display text-2xl font-normal tracking-tight sm:text-3xl">
+        <h1 className="text-balance font-display text-2xl font-normal tracking-tight sm:text-3xl">
           Combien de temps veux-tu travailler ?
         </h1>
 

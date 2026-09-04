@@ -12,7 +12,8 @@ export const Route = createFileRoute("/settings")({
       { title: "Paramètres — Focus" },
       {
         name: "description",
-        content: "Son de fin de session, durées par défaut, export et import de tes données locales.",
+        content:
+          "Son de fin de session, durées par défaut, export et import de tes données locales.",
       },
       { property: "og:title", content: "Paramètres — Focus" },
       {
@@ -30,12 +31,15 @@ const SOUNDS: Array<{ value: SoundKind; label: string }> = [
   { value: "soft", label: "Soft" },
 ];
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Row({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <section className="surface-card px-5 py-5">
-      <h2 className="label-caps text-muted-foreground">{title}</h2>
-      <div className="mt-4 space-y-5">{children}</div>
-    </section>
+    <div className="flex min-h-14 items-center justify-between gap-6 border-b border-border py-3">
+      <div>
+        <p className="text-[0.95rem]">{label}</p>
+        {hint && <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>}
+      </div>
+      <div className="flex shrink-0 items-center gap-4">{children}</div>
+    </div>
   );
 }
 
@@ -56,7 +60,7 @@ function SettingsPage() {
 
   const handleImport = async (file: File) => {
     try {
-      const { imported } = importData(JSON.parse(await file.text()));
+      const imported = importData(JSON.parse(await file.text()));
       setMessage(`${imported} session(s) importée(s).`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Import impossible.");
@@ -65,68 +69,60 @@ function SettingsPage() {
 
   return (
     <AppShell>
-      <div className="rise-in space-y-6">
-        <h1 className="font-display text-2xl font-medium tracking-tight">Paramètres</h1>
+      <div className="rise-in mx-auto max-w-lg">
+        <h1 className="font-display text-3xl font-normal tracking-tight">Réglages</h1>
 
-        <Section title="Son">
-          <label className="flex min-h-11 items-center justify-between gap-4 text-[0.95rem]">
-            <span>Son de fin de session</span>
+        <div className="mt-12">
+          <Row label="Son de fin de session">
             <input
               type="checkbox"
+              aria-label="Activer le son"
               checked={settings.soundEnabled}
               onChange={(e) => {
                 unlockAudio();
                 update({ soundEnabled: e.target.checked });
               }}
-              className="h-6 w-6 accent-[var(--accent)]"
+              className="h-5 w-5 accent-[var(--foreground)]"
             />
-          </label>
+          </Row>
 
-          <div>
-            <p className="mb-2 text-[0.95rem]">Type de son</p>
-            <div className="flex gap-2">
-              {SOUNDS.map((sound) => (
-                <button
-                  key={sound.value}
-                  onClick={() => {
-                    unlockAudio();
-                    update({ soundKind: sound.value });
-                    playChime(sound.value, settings.volume);
-                  }}
-                  aria-pressed={settings.soundKind === sound.value}
-                  className={`min-h-11 flex-1 rounded-xl border text-sm transition-colors ${
-                    settings.soundKind === sound.value
-                      ? "border-foreground bg-primary text-primary-foreground"
-                      : "border-border hover:border-foreground/30"
-                  }`}
-                >
-                  {sound.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <Row label="Type de son">
+            {SOUNDS.map((sound) => (
+              <button
+                key={sound.value}
+                onClick={() => {
+                  unlockAudio();
+                  update({ soundKind: sound.value });
+                  playChime(sound.value, settings.volume);
+                }}
+                aria-pressed={settings.soundKind === sound.value}
+                className={`min-h-11 text-sm transition-colors ${
+                  settings.soundKind === sound.value
+                    ? "text-foreground underline underline-offset-4"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {sound.label}
+              </button>
+            ))}
+          </Row>
 
-          <label className="block">
-            <span className="text-[0.95rem]">Volume · {Math.round(settings.volume * 100)}%</span>
+          <Row label="Volume" hint={`${Math.round(settings.volume * 100)}%`}>
             <input
               type="range"
+              aria-label="Volume"
               min={0}
               max={100}
               value={Math.round(settings.volume * 100)}
               onChange={(e) => update({ volume: Number(e.target.value) / 100 })}
-              className="mt-3 w-full accent-[var(--accent)]"
+              className="w-40 accent-[var(--foreground)]"
             />
-          </label>
+          </Row>
 
-          <label className="flex min-h-11 items-center justify-between gap-4 text-[0.95rem]">
-            <span>
-              Notifications navigateur
-              <span className="block text-xs text-muted-foreground">
-                Optionnel, selon les permissions de ton navigateur.
-              </span>
-            </span>
+          <Row label="Notifications" hint="Selon les permissions du navigateur.">
             <input
               type="checkbox"
+              aria-label="Activer les notifications"
               checked={settings.notificationsEnabled}
               onChange={async (e) => {
                 if (!e.target.checked) return update({ notificationsEnabled: false });
@@ -134,14 +130,11 @@ function SettingsPage() {
                 update({ notificationsEnabled: granted });
                 if (!granted) setMessage("Notifications refusées par le navigateur.");
               }}
-              className="h-6 w-6 accent-[var(--accent)]"
+              className="h-5 w-5 accent-[var(--foreground)]"
             />
-          </label>
-        </Section>
+          </Row>
 
-        <Section title="Préférences">
-          <label className="flex min-h-11 items-center justify-between gap-4 text-[0.95rem]">
-            <span>Durée de focus par défaut (min)</span>
+          <Row label="Durée de focus" hint="minutes">
             <input
               type="number"
               min={5}
@@ -150,11 +143,11 @@ function SettingsPage() {
               onChange={(e) =>
                 update({ defaultFocusMinutes: Math.max(5, Math.min(120, Number(e.target.value))) })
               }
-              className="min-h-11 w-24 rounded-lg border border-input bg-background px-3 text-center"
+              className="min-h-11 w-16 border-b border-input bg-transparent text-center outline-none focus:border-foreground"
             />
-          </label>
-          <label className="flex min-h-11 items-center justify-between gap-4 text-[0.95rem]">
-            <span>Durée de pause par défaut (min)</span>
+          </Row>
+
+          <Row label="Durée de pause" hint="minutes">
             <input
               type="number"
               min={0}
@@ -163,23 +156,21 @@ function SettingsPage() {
               onChange={(e) =>
                 update({ defaultBreakMinutes: Math.max(0, Math.min(60, Number(e.target.value))) })
               }
-              className="min-h-11 w-24 rounded-lg border border-input bg-background px-3 text-center"
+              className="min-h-11 w-16 border-b border-input bg-transparent text-center outline-none focus:border-foreground"
             />
-          </label>
-        </Section>
+          </Row>
+        </div>
 
-        <Section title="Données">
-          <button
-            onClick={handleExport}
-            className="min-h-12 w-full rounded-xl border border-border text-sm transition-colors hover:bg-secondary"
-          >
+        <h2 className="mt-16 text-sm text-muted-foreground">Données</h2>
+        <div className="mt-4 flex flex-col items-start gap-1">
+          <button onClick={handleExport} className="min-h-11 text-[0.95rem] hover:underline underline-offset-4">
             Exporter mes données
           </button>
           <button
             onClick={() => fileRef.current?.click()}
-            className="min-h-12 w-full rounded-xl border border-border text-sm transition-colors hover:bg-secondary"
+            className="min-h-11 text-[0.95rem] hover:underline underline-offset-4"
           >
-            Importer mes données
+            Importer des données
           </button>
           <input
             ref={fileRef}
@@ -204,20 +195,21 @@ function SettingsPage() {
                 setMessage("Toutes les données ont été supprimées.");
               }
             }}
-            className="min-h-12 w-full rounded-xl border border-destructive/40 text-sm text-destructive transition-colors hover:bg-destructive/10"
+            className="min-h-11 text-[0.95rem] text-destructive hover:underline underline-offset-4"
           >
             Supprimer toutes mes données
           </button>
-          {message && (
-            <p role="status" className="text-sm text-muted-foreground">
-              {message}
-            </p>
-          )}
-          <p className="border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
-            Tes données sont stockées uniquement sur cet appareil. L'application n'envoie pas ton
-            journal vers un serveur.
+        </div>
+
+        {message && (
+          <p role="status" className="mt-6 text-sm text-muted-foreground">
+            {message}
           </p>
-        </Section>
+        )}
+
+        <p className="mt-16 text-xs leading-relaxed text-muted-foreground">
+          Tes données sont stockées uniquement sur cet appareil.
+        </p>
       </div>
     </AppShell>
   );
